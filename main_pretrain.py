@@ -15,6 +15,7 @@ import numpy as np
 import os
 import time
 from pathlib import Path
+import matplotlib.pyplot as plt
 
 import torch
 import torch.backends.cudnn as cudnn
@@ -32,7 +33,7 @@ from util.misc import NativeScalerWithGradNormCount as NativeScaler
 
 import models_mae
 
-from engine_pretrain import train_one_epoch
+from engine_pretrain import train_one_epoch, train_one_epoch_revision
 
 
 def get_args_parser():
@@ -156,6 +157,8 @@ def main(args):
     model = models_mae.__dict__[args.model](norm_pix_loss=args.norm_pix_loss)
 
     model.to(device)
+    start_revision = 199
+    loss_threshold = 0.02
 
     model_without_ddp = model
     print("Model = %s" % str(model_without_ddp))
@@ -185,15 +188,31 @@ def main(args):
 
     print(f"Start training for {args.epochs} epochs")
     start_time = time.time()
+    tot_steps = 0
+    num_steps_per_epoch = []
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             data_loader_train.sampler.set_epoch(epoch)
-        train_stats = train_one_epoch(
+
+        if epoch < start_revision:
+            train_stats, num_steps = train_one_epoch_revision(
             model, data_loader_train,
-            optimizer, device, epoch, loss_scaler,
+            optimizer, device, epoch, loss_scaler, start_revision, loss_threshold,
             log_writer=log_writer,
             args=args
         )
+            tot_steps+=num_steps
+            num_steps_per_epoch.append(num_steps)
+        
+        else:
+            train_stats, num_steps = train_one_epoch(
+                model, data_loader_train,
+                optimizer, device, epoch, loss_scaler,
+                log_writer=log_writer,
+                args=args
+            )
+            tot_steps+=num_steps
+            num_steps_per_epoch.append(num_steps)
         if args.output_dir and (epoch % 20 == 0 or epoch + 1 == args.epochs):
             misc.save_model(
                 args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer,
@@ -211,6 +230,17 @@ def main(args):
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
     print('Training time {}'.format(total_time_str))
+    if misc.is_main_process():
+        plt.figure(figsize=(10, 5))
+        plt.plot(range(args.start_epoch, args.epochs), num_steps_per_epoch, marker='o')
+        plt.title('Number of Samples Used per Epoch')
+        plt.xlabel('Epoch')
+        plt.ylabel('Number of Samples')
+        plt.grid(True)
+        plot_path = os.path.join(args.output_dir, "steps_per_epoch.png")
+        plt.savefig(plot_path)
+        print(f"Saved steps-per-epoch plot to {plot_path}")
+        plt.close()
 
 
 if __name__ == '__main__':
