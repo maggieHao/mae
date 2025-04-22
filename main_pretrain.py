@@ -35,10 +35,6 @@ import models_mae
 
 from engine_pretrain import train_one_epoch, train_one_epoch_revision
 
-import sys
-import collections.abc
-sys.modules['torch._six.container_abcs'] = collections.abc
-
 
 def get_args_parser():
     parser = argparse.ArgumentParser('MAE pre-training', add_help=False)
