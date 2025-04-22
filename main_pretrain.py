@@ -25,7 +25,7 @@ import torchvision.datasets as datasets
 
 import timm
 
-assert timm.__version__ == "0.3.2"  # version check
+# assert timm.__version__ == "0.3.2"  # version check
 import timm.optim.optim_factory as optim_factory
 
 import util.misc as misc
@@ -157,8 +157,8 @@ def main(args):
     model = models_mae.__dict__[args.model](norm_pix_loss=args.norm_pix_loss)
 
     model.to(device)
-    start_revision = 199
-    loss_threshold = 0.02
+    start_revision = 600
+    loss_threshold = 0.05
 
     model_without_ddp = model
     print("Model = %s" % str(model_without_ddp))
