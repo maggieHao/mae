@@ -232,16 +232,13 @@ class MaskedAutoencoderViT(nn.Module):
         per_sample_loss = (loss * mask).sum(dim=1) / mask.sum(dim=1)  # [N]
         return per_sample_loss
 
-    def forward(self, imgs, mask_ratio=0.75):
+    def forward(self, imgs, mask_ratio=0.75, curriculum=False):
         latent, mask, ids_restore = self.forward_encoder(imgs, mask_ratio)
         pred = self.forward_decoder(latent, ids_restore)  # [N, L, p*p*3]
-        loss = self.forward_loss(imgs, pred, mask)
-        return loss, pred, mask
-
-    def forward_curriculum(self, imgs, mask_ratio=0.75):
-        latent, mask, ids_restore = self.forward_encoder(imgs, mask_ratio)
-        pred = self.forward_decoder(latent, ids_restore)  # [N, L, p*p*3]
-        loss = self.forward_loss_curriculum(imgs, pred, mask)
+        if curriculum:
+            loss = self.forward_loss_curriculum(imgs, pred, mask)
+        else:
+            loss = self.forward_loss(imgs, pred, mask)
         return loss, pred, mask
 
 
