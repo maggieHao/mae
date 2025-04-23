@@ -130,6 +130,7 @@ def train_one_epoch_revision(model: torch.nn.Module,
                 mask = individual_losses > loss_threshold
 
         if not mask.any():
+            metric_logger.update(loss=0.0)
             continue
 
         selected_samples = samples[mask]
