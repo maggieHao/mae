@@ -119,7 +119,7 @@ def train_one_epoch_revision(model: torch.nn.Module,
                 print('mask shape')
                 print(predictions.shape)
                 print('loss shape')
-                print(_.shape)
+                print(_)
            
                 individual_losses = F.mse_loss(predictions, targets, reduction='none') 
 
