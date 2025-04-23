@@ -123,21 +123,16 @@ def train_one_epoch_revision(model: torch.nn.Module,
            
                 # individual_losses = F.mse_loss(predictions, targets, reduction='none') 
                 individual_losses, _, _ = model(samples, mask_ratio=args.mask_ratio, curriculum=True)
-                print(individual_losses)
 
                 if individual_losses.dim() > 1:
                     individual_losses = individual_losses.mean(dim=tuple(range(1, individual_losses.dim())))  
 
                 mask = individual_losses > loss_threshold
-                print(mask)
-                print(individual_losses)
-                print(loss_threshold)
 
         if not mask.any():
             metric_logger.update(loss=0.0)
             lr = optimizer.param_groups[0]["lr"]
             metric_logger.update(lr=lr)
-            print('skip here')
             continue
 
         selected_samples = samples[mask]
