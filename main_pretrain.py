@@ -197,7 +197,7 @@ def main(args):
         if epoch < start_revision:
             train_stats, num_steps = train_one_epoch_revision(
             model, data_loader_train,
-            optimizer, device, epoch, loss_scaler, start_revision, loss_threshold,
+            optimizer, device, epoch, loss_scaler, loss_threshold,
             log_writer=log_writer,
             args=args
         )
