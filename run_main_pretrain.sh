@@ -6,4 +6,5 @@ python -m torch.distributed.launch --nproc_per_node=2 main_pretrain.py  --batch_
     --mask_ratio 0.75 \
     --epochs 800 \
     --warmup_epochs 40 \
+    --data_path '/home/maggie/Documents/ImageNet1k'\
     --blr 1.5e-4 --weight_decay 0.05
