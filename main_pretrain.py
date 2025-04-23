@@ -158,7 +158,7 @@ def main(args):
 
     model.to(device)
     start_revision = 600
-    loss_threshold = 0.05
+    loss_threshold = 0.95
 
     model_without_ddp = model
     print("Model = %s" % str(model_without_ddp))
