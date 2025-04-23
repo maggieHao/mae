@@ -113,15 +113,16 @@ def train_one_epoch_revision(model: torch.nn.Module,
 
         with torch.no_grad():
             with torch.cuda.amp.autocast():
-                _, targets, predictions = model(samples, mask_ratio=args.mask_ratio)
-                print('targets shape')
-                print(targets.shape)
-                print('mask shape')
-                print(predictions.shape)
-                print('loss shape')
-                print(_)
+                # _, targets, predictions = model.forward_curriculum(samples, mask_ratio=args.mask_ratio)
+                # print('targets shape')
+                # print(targets.shape)
+                # print('mask shape')
+                # print(predictions.shape)
+                # print('loss shape')
+                # print(_)
            
-                individual_losses = F.mse_loss(predictions, targets, reduction='none') 
+                # individual_losses = F.mse_loss(predictions, targets, reduction='none') 
+                individual_losses, _, _ = model.forward_curriculum(samples, mask_ratio=args.mask_ratio)
 
                 if individual_losses.dim() > 1:
                     individual_losses = individual_losses.mean(dim=tuple(range(1, individual_losses.dim())))  
