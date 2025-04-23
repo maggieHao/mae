@@ -114,6 +114,12 @@ def train_one_epoch_revision(model: torch.nn.Module,
         with torch.no_grad():
             with torch.cuda.amp.autocast():
                 _, targets, predictions = model(samples, mask_ratio=args.mask_ratio)
+                print('targets shape')
+                print(targets.shape)
+                print('mask shape')
+                print(predictions.shape)
+                print('loss shape')
+                print(_.shape)
            
                 individual_losses = F.mse_loss(predictions, targets, reduction='none') 
 
