@@ -122,7 +122,7 @@ def train_one_epoch_revision(model: torch.nn.Module,
                 # print(_)
            
                 # individual_losses = F.mse_loss(predictions, targets, reduction='none') 
-                individual_losses, _, _ = model.forward_curriculum(samples, mask_ratio=args.mask_ratio)
+                individual_losses, _, _ = model(samples, mask_ratio=args.mask_ratio, curriculum=True)
 
                 if individual_losses.dim() > 1:
                     individual_losses = individual_losses.mean(dim=tuple(range(1, individual_losses.dim())))  
