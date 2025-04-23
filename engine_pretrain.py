@@ -131,6 +131,7 @@ def train_one_epoch_revision(model: torch.nn.Module,
 
         if not mask.any():
             metric_logger.update(loss=0.0)
+            print('skip here')
             continue
 
         selected_samples = samples[mask]
