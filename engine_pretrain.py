@@ -135,6 +135,7 @@ def train_one_epoch_revision(model: torch.nn.Module,
 
         if not mask.any():
             metric_logger.update(loss=0.0)
+            metric_logger.update(lr=lr)
             print('skip here')
             continue
 
