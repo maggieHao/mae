@@ -134,6 +134,14 @@ def train_one_epoch_revision(model: torch.nn.Module,
             lr = optimizer.param_groups[0]["lr"]
             metric_logger.update(lr=lr)
             continue
+        if not mask.any():
+            loss_value = 0.0
+            loss_value_reduce = misc.all_reduce_mean(loss_value)
+            metric_logger.update(loss=loss_value)
+            lr = optimizer.param_groups[0]["lr"]
+            metric_logger.update(lr=lr)
+            torch.cuda.synchronize()
+            continue
 
         selected_samples = samples[mask]
         num_steps+=selected_samples.size(0)
@@ -169,6 +177,7 @@ def train_one_epoch_revision(model: torch.nn.Module,
             epoch_1000x = int((data_iter_step / len(data_loader) + epoch) * 1000)
             log_writer.add_scalar('train_loss', loss_value_reduce, epoch_1000x)
             log_writer.add_scalar('lr', lr, epoch_1000x)
+            log_writer.add_scalar('num_steps', num_steps, epoch_1000x)
 
 
     # gather the stats from all processes
