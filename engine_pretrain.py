@@ -129,11 +129,11 @@ def train_one_epoch_revision(model: torch.nn.Module,
 
                 mask = individual_losses > loss_threshold
 
-        if not mask.any():
-            metric_logger.update(loss=0.0)
-            lr = optimizer.param_groups[0]["lr"]
-            metric_logger.update(lr=lr)
-            continue
+        # if not mask.any():
+        #     metric_logger.update(loss=0.0)
+        #     lr = optimizer.param_groups[0]["lr"]
+        #     metric_logger.update(lr=lr)
+        #     continue
         if not mask.any():
             loss_value = 0.0
             loss_value_reduce = misc.all_reduce_mean(loss_value)
