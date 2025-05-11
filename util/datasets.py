@@ -16,6 +16,29 @@ from torchvision import datasets, transforms
 from timm.data import create_transform
 from timm.data.constants import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
 
+def build_dataset_cifar10(is_train, args):
+    transform = transforms.Compose([
+        transforms.Resize((224,224)),
+        transforms.ToTensor(),
+        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+    ])
+    if is_train:
+        dataset = datasets.CIFAR10(root='/mnt/ceph/image_tasks_rwm/dataset', train=True, download=True, transform=transform)
+    else:
+        dataset = datasets.CIFAR10(root='/mnt/ceph/image_tasks_rwm/dataset', train=False, download=True, transform=transform)
+    return dataset
+
+def build_dataset_cifar100(is_train, args):
+    transform = transforms.Compose([
+        transforms.Resize((224,224)),
+        transforms.ToTensor(),
+        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+    ])
+    if is_train:
+        dataset = datasets.CIFAR100(root='/mnt/ceph/image_tasks_rwm/dataset', train=True, download=True, transform=transform)
+    else:
+        dataset = datasets.CIFAR100(root='/mnt/ceph/image_tasks_rwm/dataset', train=False, download=True, transform=transform)
+    return dataset
 
 def build_dataset(is_train, args):
     transform = build_transform(is_train, args)
