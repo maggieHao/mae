@@ -78,7 +78,7 @@ def train_one_epoch(model: torch.nn.Module,
             log_writer.add_scalar('train_loss', loss_value_reduce, epoch_1000x)
             log_writer.add_scalar('lr', lr, epoch_1000x)
 
-
+    log_writer.add_scalar('num_steps_epoch', num_steps, epoch)
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()
     print("Averaged stats:", metric_logger)
@@ -136,11 +136,11 @@ def train_one_epoch_revision(model: torch.nn.Module,
         #     continue
         if not mask.any():
             loss_value = 0.0
-            loss_value_reduce = misc.all_reduce_mean(loss_value)
+            #loss_value_reduce = misc.all_reduce_mean(loss_value)
             metric_logger.update(loss=loss_value)
             lr = optimizer.param_groups[0]["lr"]
             metric_logger.update(lr=lr)
-            torch.cuda.synchronize()
+            #torch.cuda.synchronize()
             continue
 
         selected_samples = samples[mask]
@@ -170,6 +170,8 @@ def train_one_epoch_revision(model: torch.nn.Module,
 
         loss_value_reduce = misc.all_reduce_mean(loss_value)
         samples_used_per_epoch.append(num_steps)
+        epoch_1000x = int((data_iter_step / len(data_loader) + epoch*100)*1000)
+        log_writer.add_scalar('num_steps_each', num_steps, epoch_1000x)
         if log_writer is not None and (data_iter_step + 1) % accum_iter == 0:
             """ We use epoch_1000x as the x-axis in tensorboard.
             This calibrates different curves when batch size changes.
@@ -179,7 +181,9 @@ def train_one_epoch_revision(model: torch.nn.Module,
             log_writer.add_scalar('lr', lr, epoch_1000x)
             log_writer.add_scalar('num_steps', num_steps, epoch_1000x)
 
-
+    log_writer.add_scalar('num_steps_epoch', num_steps, epoch)
+    print("Current epoch is: ", epoch)
+    print("Number of steps per epoch:", num_steps)
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()
     print("Averaged stats:", metric_logger)

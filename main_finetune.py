@@ -23,14 +23,14 @@ from torch.utils.tensorboard import SummaryWriter
 
 import timm
 
-assert timm.__version__ == "0.3.2" # version check
+#assert timm.__version__ == "0.3.2" # version check
 from timm.models.layers import trunc_normal_
 from timm.data.mixup import Mixup
 from timm.loss import LabelSmoothingCrossEntropy, SoftTargetCrossEntropy
 
 import util.lr_decay as lrd
 import util.misc as misc
-from util.datasets import build_dataset
+from util.datasets import build_dataset, build_dataset_cifar10, build_dataset_cifar100
 from util.pos_embed import interpolate_pos_embed
 from util.misc import NativeScalerWithGradNormCount as NativeScaler
 
@@ -138,7 +138,7 @@ def get_args_parser():
                         help='Perform evaluation only')
     parser.add_argument('--dist_eval', action='store_true', default=False,
                         help='Enabling distributed evaluation (recommended during training for faster monitor')
-    parser.add_argument('--num_workers', default=10, type=int)
+    parser.add_argument('--num_workers', default=72, type=int)
     parser.add_argument('--pin_mem', action='store_true',
                         help='Pin CPU memory in DataLoader for more efficient (sometimes) transfer to GPU.')
     parser.add_argument('--no_pin_mem', action='store_false', dest='pin_mem')
@@ -151,6 +151,7 @@ def get_args_parser():
     parser.add_argument('--dist_on_itp', action='store_true')
     parser.add_argument('--dist_url', default='env://',
                         help='url used to set up distributed training')
+    parser.add_argument('--dataset', default='imagenet', type=str)
 
     return parser
 
@@ -170,8 +171,19 @@ def main(args):
 
     cudnn.benchmark = True
 
-    dataset_train = build_dataset(is_train=True, args=args)
-    dataset_val = build_dataset(is_train=False, args=args)
+    #dataset_train = build_dataset(is_train=True, args=args)
+    #dataset_val = build_dataset(is_train=False, args=args)
+    if args.dataset == 'cifar10':
+        dataset_train = build_dataset_cifar10(is_train=True, args=args)
+        dataset_val = build_dataset_cifar10(is_train=False, args=args)
+        print('Dataset is setting as cifar10.')
+    elif args.dataset == 'cifar100':
+        dataset_train = build_dataset_cifar100(is_train=True, args=args)
+        dataset_val = build_dataset_cifar100(is_train=False, args=args)
+        print('Dataset is setting as cifar100.')
+    else:
+        dataset_train = build_dataset(is_train=True, args=args)
+        dataset_val = build_dataset(is_train=False, args=args)
 
     if True:  # args.distributed:
         num_tasks = misc.get_world_size()

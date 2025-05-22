@@ -1,0 +1,12 @@
+python main_finetune.py \
+    --accum_iter 4 \
+    --output_dir './output_dir_cifar10' \
+    --log_dir './output_dir_cifar10' \
+    --batch_size 32 \
+    --model vit_base_patch16 \
+    --finetune '/mnt/ceph/image_tasks_rwm/mae/output_dir_h200/checkpoint-799.pth' \
+    --epochs 30 \
+    --blr 5e-4 --layer_decay 0.65 \
+    --weight_decay 0.05\
+    --cls_token \
+    --dist_eval --dataset cifar10

@@ -1,8 +1,8 @@
 python main_pretrain.py \
-    --resume '/mnt/ceph/image_tasks_rwm/mae/output_dir/checkpoint-44.pth' \
-    --output_dir './output_dir_h200' \
-    --log_dir './output_dir_h200' \
-    --batch_size 1024 \
+    --resume '/mnt/ceph/image_tasks_rwm/mae/output_dir_h200/checkpoint-599.pth' \
+    --output_dir './output_dir_h200_stps' \
+    --log_dir './output_dir_h200_stps' \
+    --batch_size 512 \
     --world_size 1 \
     --model mae_vit_base_patch16 \
     --norm_pix_loss \
